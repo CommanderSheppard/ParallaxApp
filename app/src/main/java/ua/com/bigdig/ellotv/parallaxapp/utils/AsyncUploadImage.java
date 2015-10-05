@@ -15,10 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-
 public class AsyncUploadImage extends AsyncTask<Object, Object, Object> {
-    private static final String TAG = "AsyncUploadImage ";
-    ImageView iv;
+    private ImageView iv;
     private HttpURLConnection connection;
     private InputStream is;
     private Bitmap bitmap;
@@ -60,9 +58,9 @@ public class AsyncUploadImage extends AsyncTask<Object, Object, Object> {
         super.onPostExecute(result);
         if (null != result) {
             iv.setImageBitmap((Bitmap) result);
-            //    System.out.println(TAG + " image download ok！");
+            //    System.out.println("AsyncTask image download ok！");
         } else {
-            //  System.out.println(TAG + " image download failed！");
+            //  System.out.println("AsyncTask image download failed！");
         }
     }
 }

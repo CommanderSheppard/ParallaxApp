@@ -20,7 +20,6 @@ import java.net.URL;
 import ua.com.bigdig.ellotv.parallaxapp.model.ArtistEntity;
 
 
-
 public class JsonHandler extends AsyncTask {
 
 

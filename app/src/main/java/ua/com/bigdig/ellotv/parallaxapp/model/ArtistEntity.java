@@ -19,7 +19,19 @@ public class ArtistEntity {
     public ArtistEntity() {
     }
 
-    // toString() used only for validating, could be deleted too
+    public ArtistEntity(long id, String slug, String title, String pictureLink, String[] artists, long source, String youtube_id, long view_count, long like_count) {
+        this.id = id;
+        this.slug = slug;
+        this.title = title;
+        this.pictureLink = pictureLink;
+        this.artists = artists;
+        this.source = source;
+        this.youtube_id = youtube_id;
+        this.view_count = view_count;
+        this.like_count = like_count;
+    }
+
+    // toString() used only for validating, could be deleted
     @Override
     public String toString() {
         return "ArtistEntity{" +
@@ -33,18 +45,6 @@ public class ArtistEntity {
                 ", view_count=" + view_count +
                 ", like_count=" + like_count +
                 '}';
-    }
-
-    public ArtistEntity(long id, String slug, String title, String pictureLink, String[] artists, long source, String youtube_id, long view_count, long like_count) {
-        this.id = id;
-        this.slug = slug;
-        this.title = title;
-        this.pictureLink = pictureLink;
-        this.artists = artists;
-        this.source = source;
-        this.youtube_id = youtube_id;
-        this.view_count = view_count;
-        this.like_count = like_count;
     }
 
     public long getId() {
@@ -79,8 +79,13 @@ public class ArtistEntity {
         this.pictureLink = pictureLink;
     }
 
-    public String[] getArtists() {
-        return artists;
+    public String getArtists() {
+        StringBuilder artistsBuilder = new StringBuilder();
+        for (int i = 0; i < artists.length; i++) {
+            artistsBuilder.append(artists[i] + " ");
+        }
+        artistsBuilder.trimToSize();
+        return artistsBuilder.toString();
     }
 
     public void setArtists(String[] artists) {
