@@ -5,10 +5,11 @@ package ua.com.bigdig.ellotv.parallaxapp.ui;
  */
 
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
@@ -24,13 +25,12 @@ import java.util.concurrent.ExecutionException;
 import ua.com.bigdig.ellotv.parallaxapp.R;
 import ua.com.bigdig.ellotv.parallaxapp.model.ArtistEntity;
 import ua.com.bigdig.ellotv.parallaxapp.utils.AsyncUploadImage;
+import ua.com.bigdig.ellotv.parallaxapp.utils.CustomTypefaceSpan;
 import ua.com.bigdig.ellotv.parallaxapp.utils.JsonHandler;
 
 
+@SuppressWarnings("unchecked")
 public class MainActivity extends AppCompatActivity {
-    private LinearLayout linearLayout;
-    private ScrollView scrollView;
-    private int screenHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,59 +40,41 @@ public class MainActivity extends AppCompatActivity {
         Object o = null;
         try {
             o = new JsonHandler().execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        screenHeight = display.getHeight();
-        scrollView = (ScrollView) findViewById(R.id.scrollView1);
-        linearLayout = new LinearLayout(getApplicationContext());
+
+
+        ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView1);
+        LinearLayout linearLayout = new LinearLayout(getApplicationContext());
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
         ArtistEntity[] tempo = (ArtistEntity[]) o;
+        // if (tempo == null) {tempo = new ArtistEntity[]{};} uncomment this if it possible to get null from tempo; should be checked;
         for (int i = 0; i < tempo.length; i++) {
-
             ImageView tempoView = new ImageView(getApplicationContext());
             FrameLayout tempoFrame = new FrameLayout(getApplicationContext());
-
-            TextView videoTextView = new TextView(getApplicationContext());
-            TextView artistTextView = new TextView(getApplicationContext());
-            TextView countTextView = new TextView(getApplicationContext());
-
-            countTextView.setBackgroundColor(Color.parseColor("#99000000"));
-
-            videoTextView.setGravity(Gravity.CENTER | Gravity.TOP);
-            artistTextView.setGravity(Gravity.CENTER | Gravity.TOP);
-            countTextView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
-// /5 + /26 &&  /5 + /12 was good
-            videoTextView.setPadding(0, screenHeight / 5 + screenHeight / 26, 0, 0);
-            artistTextView.setPadding(0, screenHeight / 5 + screenHeight / 12, 0, 0);
-
-
-            videoTextView.setText(tempo[i].getTitle());
-            artistTextView.setText(tempo[i].getArtists());
-            countTextView.setText("Просмотров: " + tempo[i].getView_count());
-
-            videoTextView.setTextColor(Color.WHITE);
-            artistTextView.setTextColor(Color.WHITE);
-            countTextView.setTextColor(Color.WHITE);
-            videoTextView.setTextSize(screenHeight/36);
-            artistTextView.setTextSize(screenHeight/36);
-            countTextView.setTextSize(screenHeight/36);
-
-            videoTextView.setTypeface(Typeface.createFromAsset(getAssets(), "Roboto-Bold.ttf"));
-            artistTextView.setTypeface(Typeface.createFromAsset(getAssets(), "Roboto-Light.ttf"));
-            countTextView.setTypeface(Typeface.createFromAsset(getAssets(), "Roboto-Regular.ttf"));
-
-
+            TextView someTextView = new TextView(getApplicationContext());
+            someTextView.setBackgroundColor(Color.parseColor("#99000000"));
+            someTextView.setTextSize(getFontSize());
+            someTextView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
+            someTextView.setPadding(0, 0, 0, getFontSize());
+            int titleLength = tempo[i].getTitle().length();
+            int artistsLength = tempo[i].getArtists().length();
+//unused!   int countLength = String.valueOf(tempo[i].getView_count()).length();
+            Typeface robotoBold = Typeface.createFromAsset(getAssets(), "Roboto-Bold.ttf");
+            Typeface robotoLight = Typeface.createFromAsset(getAssets(), "Roboto-Light.ttf");
+            Typeface robotoRegular = Typeface.createFromAsset(getAssets(), "Roboto-Regular.ttf");
+            someTextView.setTextColor(Color.WHITE);
+            SpannableStringBuilder allText = new SpannableStringBuilder(tempo[i].getTitle() +
+                    '\n' + tempo[i].getArtists() + '\n' + "Просмотров: " + tempo[i].getView_count());
+            allText.setSpan(new CustomTypefaceSpan("", robotoBold), 0, titleLength, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+            allText.setSpan(new CustomTypefaceSpan("", robotoLight), titleLength, titleLength + artistsLength, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+            allText.setSpan(new CustomTypefaceSpan("", robotoRegular), titleLength + artistsLength, allText.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+            someTextView.setText(allText);
             new AsyncUploadImage(tempoView).execute(tempo[i].getPictureLink());
             tempoFrame.addView(tempoView);
-            tempoFrame.addView(countTextView);
-            tempoFrame.addView(videoTextView);
-            tempoFrame.addView(artistTextView);
+            tempoFrame.addView(someTextView);
             tempoView.setAdjustViewBounds(true);
             linearLayout.addView(tempoFrame);
         }
@@ -109,9 +91,28 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
+    }
+
+    private int getFontSize() {
+        Display display = getWindowManager().getDefaultDisplay();
+        int screenHeight = display.getHeight();
+        int fontSize = 15;
+        if (screenHeight < 325) {
+            fontSize = 15;
         }
-        return super.onOptionsItemSelected(item);
+        if (screenHeight >= 325 && screenHeight < 805) {
+            fontSize = 20;
+        }
+        if (screenHeight >= 805 && screenHeight < 1285) {
+            fontSize = 25;
+        }
+        if (screenHeight >= 1205 && screenHeight < 2000) {
+            fontSize = 35;
+        }
+        if (screenHeight > 2000) {
+            fontSize = 48;
+        }
+        return fontSize;
     }
 }
