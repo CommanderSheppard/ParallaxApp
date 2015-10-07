@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.view.Display;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,9 +56,7 @@ public class MainActivity extends AppCompatActivity {
             FrameLayout tempoFrame = new FrameLayout(this);
             TextView someTextView = new TextView(this);
             someTextView.setBackgroundColor(Color.parseColor("#99000000"));
-            someTextView.setTextSize(getFontSize());
             someTextView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
-            someTextView.setPadding(0, 0, 0, getFontSize());
             int titleLength = tempo[i].getTitle().length();
             int artistsLength = tempo[i].getArtists().length();
 //unused!   int countLength = String.valueOf(tempo[i].getView_count()).length();
@@ -67,10 +65,13 @@ public class MainActivity extends AppCompatActivity {
             Typeface robotoRegular = Typeface.createFromAsset(getAssets(), "Roboto-Regular.ttf");
             someTextView.setTextColor(Color.WHITE);
             SpannableStringBuilder allText = new SpannableStringBuilder(tempo[i].getTitle() +
-                    '\n' + tempo[i].getArtists() + '\n' + "Просмотров: " + tempo[i].getView_count());
+                    '\n' + tempo[i].getArtists() + '\n' + "Просмотров: " + tempo[i].getView_count() + '\n');
             allText.setSpan(new CustomTypefaceSpan("", robotoBold), 0, titleLength, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
             allText.setSpan(new CustomTypefaceSpan("", robotoLight), titleLength, titleLength + artistsLength, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
             allText.setSpan(new CustomTypefaceSpan("", robotoRegular), titleLength + artistsLength, allText.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
+            someTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_size));
+            System.out.println(getResources().getDimension(R.dimen.text_size));
+
             someTextView.setText(allText);
             new AsyncUploadImage(tempoView).execute(tempo[i].getPictureLink());
             tempoFrame.addView(tempoView);
@@ -92,27 +93,5 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         return id == R.id.action_settings || super.onOptionsItemSelected(item);
-    }
-
-    private int getFontSize() {
-        Display display = getWindowManager().getDefaultDisplay();
-        int screenHeight = display.getHeight();
-        int fontSize = 15;
-        if (screenHeight < 325) {
-            fontSize = 15;
-        }
-        if (screenHeight >= 325 && screenHeight < 805) {
-            fontSize = 20;
-        }
-        if (screenHeight >= 805 && screenHeight < 1285) {
-            fontSize = 25;
-        }
-        if (screenHeight >= 1205 && screenHeight < 2000) {
-            fontSize = 35;
-        }
-        if (screenHeight > 2000) {
-            fontSize = 48;
-        }
-        return fontSize;
     }
 }

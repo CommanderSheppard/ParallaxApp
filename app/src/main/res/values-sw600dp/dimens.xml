@@ -1,4 +1,5 @@
 <resources>
     <dimen name="activity_horizontal_margin">64dp</dimen>
-    <dimen name="text_size">60sp</dimen>
+    <dimen name="text_size">52sp</dimen>
 </resources>
+<!--this used for 2560*1600-->
