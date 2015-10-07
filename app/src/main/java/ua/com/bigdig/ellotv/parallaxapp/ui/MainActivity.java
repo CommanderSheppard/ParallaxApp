@@ -46,15 +46,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView1);
-        LinearLayout linearLayout = new LinearLayout(getApplicationContext());
+        LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
         ArtistEntity[] tempo = (ArtistEntity[]) o;
         // if (tempo == null) {tempo = new ArtistEntity[]{};} uncomment this if it possible to get null from tempo; should be checked;
         for (int i = 0; i < tempo.length; i++) {
-            ImageView tempoView = new ImageView(getApplicationContext());
-            FrameLayout tempoFrame = new FrameLayout(getApplicationContext());
-            TextView someTextView = new TextView(getApplicationContext());
+            ImageView tempoView = new ImageView(this);
+            FrameLayout tempoFrame = new FrameLayout(this);
+            TextView someTextView = new TextView(this);
             someTextView.setBackgroundColor(Color.parseColor("#99000000"));
             someTextView.setTextSize(getFontSize());
             someTextView.setGravity(Gravity.CENTER | Gravity.BOTTOM);
