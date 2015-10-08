@@ -20,11 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.concurrent.ExecutionException;
 
 import ua.com.bigdig.ellotv.parallaxapp.R;
 import ua.com.bigdig.ellotv.parallaxapp.model.ArtistEntity;
-import ua.com.bigdig.ellotv.parallaxapp.utils.AsyncUploadImage;
 import ua.com.bigdig.ellotv.parallaxapp.utils.CustomTypefaceSpan;
 import ua.com.bigdig.ellotv.parallaxapp.utils.JsonHandler;
 
@@ -70,10 +71,9 @@ public class MainActivity extends AppCompatActivity {
             allText.setSpan(new CustomTypefaceSpan("", robotoLight), titleLength, titleLength + artistsLength, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
             allText.setSpan(new CustomTypefaceSpan("", robotoRegular), titleLength + artistsLength, allText.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
             someTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_size));
-            System.out.println(getResources().getDimension(R.dimen.text_size));
-
             someTextView.setText(allText);
-            new AsyncUploadImage(tempoView).execute(tempo[i].getPictureLink());
+            Picasso.with(this).load(tempo[i].getPictureLink()).into(tempoView);
+            Picasso.with(this).setIndicatorsEnabled(true);
             tempoFrame.addView(tempoView);
             tempoFrame.addView(someTextView);
             tempoView.setAdjustViewBounds(true);
