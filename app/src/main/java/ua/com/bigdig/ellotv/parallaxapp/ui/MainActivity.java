@@ -4,6 +4,8 @@ package ua.com.bigdig.ellotv.parallaxapp.ui;
  * Created by MishaRJ on 04.10.2015.
  */
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -25,36 +27,19 @@ import java.util.concurrent.ExecutionException;
 import ua.com.bigdig.ellotv.parallaxapp.R;
 import ua.com.bigdig.ellotv.parallaxapp.model.ArtistEntity;
 import ua.com.bigdig.ellotv.parallaxapp.utils.CustomTypefaceSpan;
-import ua.com.bigdig.ellotv.parallaxapp.utils.Factory;
+import ua.com.bigdig.ellotv.parallaxapp.utils.JsonHandler;
 
 
 @SuppressWarnings("unchecked")
 public class MainActivity extends AppCompatActivity {
+    private JsonHandler jsonHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (!Factory.getJsonHandler().isDataLoaded()) {
-           /* System.out.println("dataLoaded false" + '\n' + '\n');
-            System.out.println(" __________________________________ NOW ITS LOADED FROM NET VIEW _________________________________________________________________________________________________"+'\n'+'\n');*/
-            Object o = null;
-            try {
-                o = Factory.getJsonHandler().execute().get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-            createView((ArtistEntity[]) o);
-            Factory.getJsonHandler().setDataLoaded(true);
-
-        } else {
-           /* System.out.println("dataLoaded true" + '\n' + '\n');
-            System.out.println(" __________________________________ NOW ITS LOADED FROM CACHE VIEW _________________________________________________________________________________________________"+'\n'+'\n');*/
-            createView(Factory.getJsonHandler().getArtistArray());
-        }
+        startApp();
     }
-
 
     private void createView(ArtistEntity[] artistsArray) {
         ScrollView scrollView = (ScrollView) findViewById(R.id.scrollView1);
@@ -98,6 +83,48 @@ public class MainActivity extends AppCompatActivity {
             linearLayout.addView(frameLayout);
         }
         scrollView.addView(linearLayout);
+        jsonHandler.setDataLoaded(true);
+        jsonHandler.setCopy(artistsArray);
+    }
 
+    private void createAlertDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Internet connection problem");
+        alert.setMessage("Retry connection attempt?");
+        alert.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startApp();
+            }
+        });
+        alert.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                System.exit(0);
+            }
+        });
+        alert.setCancelable(false);
+        alert.create();
+        alert.show();
+    }
+
+    private void startApp() {
+        jsonHandler = new JsonHandler();
+        if (!jsonHandler.isDataLoaded()) {
+            Object o = null;
+            try {
+                o = jsonHandler.execute().get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            if (!jsonHandler.isExceptionThrown()) {
+                createView((ArtistEntity[]) o);
+
+            } else {
+                createAlertDialog();
+            }
+        } else {
+            createView(jsonHandler.getArtistArray());
+        }
     }
 }
