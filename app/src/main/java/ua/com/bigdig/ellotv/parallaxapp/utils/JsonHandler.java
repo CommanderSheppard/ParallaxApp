@@ -22,6 +22,7 @@ import ua.com.bigdig.ellotv.parallaxapp.model.ArtistEntity;
 
 public class JsonHandler extends AsyncTask {
 
+    private static boolean dataLoaded = false;
 
     private ArtistEntity[] artistEntities;
 
@@ -143,4 +144,15 @@ public class JsonHandler extends AsyncTask {
         return initAndValidate(getAndPrepareJSONfromServer());
     }
 
+    public ArtistEntity[] getArtistArray(){
+        return  artistEntities;
+    }
+
+    public boolean isDataLoaded() {
+        return dataLoaded;
+    }
+
+    public void setDataLoaded(boolean dataLoaded) {
+        this.dataLoaded = dataLoaded;
+    }
 }
